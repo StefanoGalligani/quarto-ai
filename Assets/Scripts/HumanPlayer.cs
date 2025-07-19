@@ -43,21 +43,27 @@ public class HumanPlayer : AbstractPlayer
                 }
             }
         }
-        if (Input.GetKeyDown(KeyCode.Return))
+    }
+
+    public override string GetName()
+    {
+        return "Human";
+    }
+    
+    public void SubmitMove()
+    {
+        Move move;
+        move.BoardPosition = _boardPos ? _boardPos.transform.GetSiblingIndex() : -1;
+        move.PieceSelection = _piece ? _piece.transform.GetSiblingIndex() : -1;
+        if (gameManager.IsValidMove(move))
         {
-            Move move;
-            move.BoardPosition = _boardPos ? _boardPos.transform.GetSiblingIndex() : -1;
-            move.PieceSelection = _piece ? _piece.transform.GetSiblingIndex() : -1;
-            if (gameManager.IsValidMove(move))
-            {
-                _boardPos = null;
-                _piece = null;
-                gameManager.SubmitMove(move);
-            }
-            else
-            {
-                Debug.Log("Invalid move");
-            }
+            _boardPos = null;
+            _piece = null;
+            gameManager.SubmitMove(move);
+        }
+        else
+        {
+            Debug.Log("Invalid move");
         }
     }
 }

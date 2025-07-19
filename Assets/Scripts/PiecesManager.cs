@@ -28,7 +28,6 @@ public class PiecesManager : MonoBehaviour
         _pieces[piece].transform.position = new Vector3(0, 0.4f, 0);
         _selectionIndex = piece;
         _temporarySelectionIndex = -1;
-        Debug.Log("Placed " + piece + " for selection");
     }
 
     public void TemporarySelection(int piece)

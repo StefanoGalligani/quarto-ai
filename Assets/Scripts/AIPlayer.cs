@@ -15,4 +15,9 @@ public class AIPlayer : AbstractPlayer
     {
 
     }
+
+    public override string GetName()
+    {
+        return "AI";
+    }
 }

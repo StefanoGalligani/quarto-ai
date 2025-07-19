@@ -18,7 +18,10 @@ public class PlayerController : MonoBehaviour
             float horizontal = Input.GetAxis("Mouse X");
             float vertical = -Input.GetAxis("Mouse Y");
             transform.RotateAround(Vector3.zero, Vector3.up, Time.deltaTime * horizontal * _rotSpeed);
-            transform.RotateAround(Vector3.zero, transform.right, Time.deltaTime * vertical * _rotSpeed);
+
+            float angleCos = -Vector3.Dot(transform.forward, Vector3.up);
+            if (vertical > 0 && angleCos < 0.9f || vertical < 0 && angleCos > 0.1f)
+                transform.RotateAround(Vector3.zero, transform.right, Time.deltaTime * vertical * _rotSpeed);
         }
         float movement = -Input.mouseScrollDelta.y;
         float currentDist = transform.position.magnitude;

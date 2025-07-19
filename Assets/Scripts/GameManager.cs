@@ -1,11 +1,14 @@
 using UnityEngine;
 using System.Collections.Generic;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private PiecesManager _piecesManager;
     [SerializeField] private int _currentSelection = -1;
     [SerializeField] private AbstractPlayer[] _players;
+    [SerializeField] private TextMeshProUGUI[] _scoreTexts;
+    private int[] _scores = new int[2];
     private State _gameState;
     private int _turn = 0;
     private int _round = 0;
@@ -26,7 +29,14 @@ public class GameManager : MonoBehaviour
         _gameState.FreePositions = new List<int> {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
         _gameState.FreePieces = new List<int> {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
+        ShowScores();
         _players[_turn].StartTurn(_round, _gameState);
+    }
+
+    private void ShowScores()
+    {
+        _scoreTexts[0].text = _players[0].GetName() + "_0: " + _scores[0];
+        _scoreTexts[1].text = _players[1].GetName() + "_1: " + _scores[1];
     }
 
     public bool IsValidMove(Move move)
@@ -67,7 +77,7 @@ public class GameManager : MonoBehaviour
 
         if (QuartoUtils.CheckQuarto(_gameState))
         {
-            Debug.Log("Player " + _turn + " won");
+            _scores[_turn]++;
             return;
         }
         if (_round > 16)
