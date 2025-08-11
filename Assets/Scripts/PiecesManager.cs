@@ -31,13 +31,14 @@ public class PiecesManager : MonoBehaviour
         int posx = QuartoUtils.BoardX(pos);
         int posy = QuartoUtils.BoardY(pos);
         _pieces[piece].transform.position = new Vector3(_firstCell.x + posx * _boardSpacing, 0, _firstCell.y + posy * _boardSpacing);
+        SetOutline(piece, false);
     }
 
     public void PlaceSelection(int piece)
     {
-        _pieces[piece].transform.position = new Vector3(0, 0.4f, 0);
-        SetOutline(piece, false);
+        _pieces[piece].transform.position = new Vector3(0, 0.3f, 0);
         _selectionIndex = piece;
+        SetOutline(piece, true);
         _temporarySelectionIndex = -1;
     }
 
@@ -59,7 +60,7 @@ public class PiecesManager : MonoBehaviour
         int posx = QuartoUtils.BoardX(position);
         int posy = QuartoUtils.BoardY(position);
 
-        _pieces[_selectionIndex].transform.position = new Vector3(_firstCell.x + posx * _boardSpacing, 0.3f, _firstCell.y + posy * _boardSpacing);
+        _pieces[_selectionIndex].transform.position = new Vector3(_firstCell.x + posx * _boardSpacing, 0.1f, _firstCell.y + posy * _boardSpacing);
     }
 
     private void SetOutline(int piece, bool on)

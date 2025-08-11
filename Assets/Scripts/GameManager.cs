@@ -88,6 +88,7 @@ public class GameManager : MonoBehaviour
             _scores[_turn]++;
             _players[_turn].EndTurn();
             _turn = 1 - _turn;
+            ShowScores();
             //show a button to restart the game
             return;
         }
