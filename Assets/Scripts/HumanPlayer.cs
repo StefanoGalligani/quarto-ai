@@ -1,22 +1,31 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HumanPlayer : AbstractPlayer
 {
     [SerializeField] PiecesManager _piecesManager;
+    [SerializeField] Button _moveBtn;
     private bool _canInteract = false;
     private bool _isFirstRound;
     private State _state;
     private GameObject _piece;
     private GameObject _boardPos;
+
+    private void Start()
+    {
+    }
+
     public override void StartTurn(int round, State state)
     {
         _canInteract = true;
         _isFirstRound = round == 0;
         _state = state;
+        _moveBtn.onClick.AddListener(SubmitMove);
     }
     public override void EndTurn()
     {
         _canInteract = false;
+        _moveBtn.onClick.RemoveListener(SubmitMove);
     }
 
     void Update()
@@ -49,9 +58,10 @@ public class HumanPlayer : AbstractPlayer
     {
         return "Human";
     }
-    
+
     public void SubmitMove()
     {
+        if (!_canInteract) return;
         Move move;
         move.BoardPosition = _boardPos ? _boardPos.transform.GetSiblingIndex() : -1;
         move.PieceSelection = _piece ? _piece.transform.GetSiblingIndex() : -1;
@@ -60,6 +70,7 @@ public class HumanPlayer : AbstractPlayer
             _boardPos = null;
             _piece = null;
             gameManager.SubmitMove(move);
+            Debug.Log("Submitted: " + gameObject.name);
         }
         else
         {

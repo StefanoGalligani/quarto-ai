@@ -11,9 +11,19 @@ public class PiecesManager : MonoBehaviour
     private int _selectionIndex = -1;
     private int _temporarySelectionIndex = -1;
 
-    public void Awake()
+    public void InitialPosition()
     {
-        InitialPosition();
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                float offset = (i > 1) ? _boardOffset : 0;
+                _pieces[i * 4 + j].transform.position = new Vector3(_initialPos.x + i * _spacing + offset, 0, _initialPos.y + j * _spacing);
+                SetOutline(i * 4 + j, false);
+            }
+        }
+        _selectionIndex = -1;
+        _temporarySelectionIndex = -1;
     }
 
     public void PlacePiece(int piece, int pos)
@@ -26,6 +36,7 @@ public class PiecesManager : MonoBehaviour
     public void PlaceSelection(int piece)
     {
         _pieces[piece].transform.position = new Vector3(0, 0.4f, 0);
+        SetOutline(piece, false);
         _selectionIndex = piece;
         _temporarySelectionIndex = -1;
     }
@@ -35,9 +46,11 @@ public class PiecesManager : MonoBehaviour
         if (_temporarySelectionIndex >= 0)
         {
             _pieces[_temporarySelectionIndex].transform.position -= Vector3.up * 0.3f;
+            SetOutline(_temporarySelectionIndex, false);
         }
         _pieces[piece].transform.position += Vector3.up * 0.3f;
         _temporarySelectionIndex = piece;
+        SetOutline(_temporarySelectionIndex, true);
     }
 
     public void TemporaryPlacement(int position)
@@ -49,15 +62,8 @@ public class PiecesManager : MonoBehaviour
         _pieces[_selectionIndex].transform.position = new Vector3(_firstCell.x + posx * _boardSpacing, 0.3f, _firstCell.y + posy * _boardSpacing);
     }
 
-    public void InitialPosition()
+    private void SetOutline(int piece, bool on)
     {
-        for (int i = 0; i < 4; i++)
-        {
-            for (int j = 0; j < 4; j++)
-            {
-                float offset = (i > 1) ? _boardOffset : 0;
-                _pieces[i * 4 + j].transform.position = new Vector3(_initialPos.x + i * _spacing + offset, 0, _initialPos.y + j * _spacing);
-            }
-        }
+        _pieces[piece].transform.GetChild(0).gameObject.layer = LayerMask.NameToLayer(on ? "Outline" : "Pieces");
     }
 }

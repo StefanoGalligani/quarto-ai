@@ -13,8 +13,14 @@ public class GameManager : MonoBehaviour
     private int _turn = 0;
     private int _round = 0;
 
-    private void Start()
+    private void Awake()
     {
+        SetupGame();
+    }
+
+    private void SetupGame()
+    {
+        _piecesManager.InitialPosition();
         _gameState.BoardState = new int[4][];
         for (int i = 0; i < 4; i++)
         {
@@ -30,6 +36,8 @@ public class GameManager : MonoBehaviour
         _gameState.FreePieces = new List<int> {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
         ShowScores();
+        _round = 0;
+        _currentSelection = -1;
         _players[_turn].StartTurn(_round, _gameState);
     }
 
@@ -78,6 +86,9 @@ public class GameManager : MonoBehaviour
         if (QuartoUtils.CheckQuarto(_gameState))
         {
             _scores[_turn]++;
+            _players[_turn].EndTurn();
+            _turn = 1 - _turn;
+            //show a button to restart the game
             return;
         }
         if (_round > 16)
