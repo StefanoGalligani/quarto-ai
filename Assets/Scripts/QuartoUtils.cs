@@ -13,9 +13,24 @@ public static class QuartoUtils
         if (d == 4 || d == 0) return true;
         d = binSum / 100 % 10;
         if (d == 4 || d == 0) return true;
-        d = binSum / 100 % 10;
+        d = binSum / 1000 % 10;
         if (d == 4 || d == 0) return true;
         return false;
+    }
+    
+    private static int QuartoScore(int binSum, int nPieces)
+    {
+        int[] scores = { 0, 0, 5, 20, 1000 };
+        int score = 0;
+        int d = binSum % 10;
+        if (d == nPieces || d == 0) score += scores[nPieces];
+        d = binSum / 10 % 10;
+        if (d == nPieces || d == 0) score += scores[nPieces];
+        d = binSum / 100 % 10;
+        if (d == nPieces || d == 0) score += scores[nPieces];
+        d = binSum / 1000 % 10;
+        if (d == nPieces || d == 0) score += scores[nPieces];
+        return score;
     }
 
     public static bool CheckQuarto(State state)
@@ -58,7 +73,7 @@ public static class QuartoUtils
             int tot = 0;
             for (int i = 0; i < 4; i++)
             {
-                tot += binaryMapping[board[i][3-i]];
+                tot += binaryMapping[board[i][3 - i]];
             }
             if (IsQuarto(tot)) return true;
         }
@@ -67,14 +82,80 @@ public static class QuartoUtils
         {
             for (int j = 0; j < 3; j++)
             {
-                if (board[i][j] == -1 || board[i][j+1] == -1 || board[i+1][j] == -1 || board[i+1][j+1] == -1) continue;
+                if (board[i][j] == -1 || board[i][j + 1] == -1 || board[i + 1][j] == -1 || board[i + 1][j + 1] == -1) continue;
                 int tot = 0;
-                tot += binaryMapping[board[i][j]] + binaryMapping[board[i][j+1]] +
-                    binaryMapping[board[i+1][j]] + binaryMapping[board[i+1][j+1]];
+                tot += binaryMapping[board[i][j]] + binaryMapping[board[i][j + 1]] +
+                    binaryMapping[board[i + 1][j]] + binaryMapping[board[i + 1][j + 1]];
                 if (IsQuarto(tot)) return true;
             }
         }
         return false;
+    }
+
+    public static int EvalScore(State state)
+    {
+        int[][] board = state.BoardState;
+        int score = 0;
+        //ROWS
+        for (int i = 0; i < 4; i++)
+        {
+            int nPieces = 4;
+            int tot = 0;
+            for (int j = 0; j < 4; j++)
+            {
+                if (board[i][j] == -1) nPieces--;
+                else tot += binaryMapping[board[i][j]];
+            }
+            score += QuartoScore(tot, nPieces);
+        }
+        //COLUMNS
+        for (int i = 0; i < 4; i++)
+        {
+            int nPieces = 4;
+            int tot = 0;
+            for (int j = 0; j < 4; j++)
+            {
+                if (board[j][i] == -1) nPieces--;
+                else tot += binaryMapping[board[j][i]];
+            }
+            score += QuartoScore(tot, nPieces);
+        }
+        //DIAGONALS
+        {
+            int nPieces = 4;
+            int tot = 0;
+            for (int i = 0; i < 4; i++)
+            {
+                if (board[i][i] == -1) nPieces--;
+                else tot += binaryMapping[board[i][i]];
+            }
+            score += QuartoScore(tot, nPieces);
+        }
+        {
+            int nPieces = 4; 
+            int tot = 0;
+            for (int i = 0; i < 4; i++)
+            {
+                if (board[i][3 - i] == -1) nPieces--;
+                else tot += binaryMapping[board[i][3 - i]];
+            }
+            score += QuartoScore(tot, nPieces);
+        }
+        //SQUARES
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                int nPieces = 4;
+                int tot = 0;
+                if (board[i][j] == -1) nPieces--; else tot += binaryMapping[board[i][j]];
+                if (board[i][j + 1] == -1) nPieces--; else tot += binaryMapping[board[i][j + 1]];
+                if (board[i + 1][j] == -1) nPieces--; else tot += binaryMapping[board[i + 1][j]];
+                if (board[i + 1][j + 1] == -1) nPieces--; else tot += binaryMapping[board[i + 1][j + 1]];
+                score += QuartoScore(tot, nPieces);
+            }
+        }
+        return score;
     }
 
     public static int BoardX(int pos)

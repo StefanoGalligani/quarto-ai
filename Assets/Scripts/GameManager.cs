@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int _currentSelection = -1;
     [SerializeField] private AbstractPlayer[] _players;
     [SerializeField] private TextMeshProUGUI[] _scoreTexts;
+    [SerializeField] private GameObject _moveBtn;
+    [SerializeField] private GameObject _restartBtn;
     private int[] _scores = new int[2];
     private State _gameState;
     private int _turn = 0;
@@ -18,7 +20,7 @@ public class GameManager : MonoBehaviour
         SetupGame();
     }
 
-    private void SetupGame()
+    public void SetupGame()
     {
         _piecesManager.InitialPosition();
         _gameState.BoardState = new int[4][];
@@ -32,19 +34,21 @@ public class GameManager : MonoBehaviour
         }
         _players[0].gameManager = this;
         _players[1].gameManager = this;
-        _gameState.FreePositions = new List<int> {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
-        _gameState.FreePieces = new List<int> {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+        _gameState.FreePositions = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+        _gameState.FreePieces = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 
         ShowScores();
+        _restartBtn.SetActive(false);
+        _moveBtn.SetActive(true);
         _round = 0;
         _currentSelection = -1;
-        _players[_turn].StartTurn(_round, _gameState);
+        _players[_turn].StartTurn(_round, _gameState.Copy());
     }
 
     private void ShowScores()
     {
-        _scoreTexts[0].text = _players[0].GetName() + "_0: " + _scores[0];
-        _scoreTexts[1].text = _players[1].GetName() + "_1: " + _scores[1];
+        _scoreTexts[0].text = _players[0].GetName() + ": " + _scores[0];
+        _scoreTexts[1].text = _players[1].GetName() + ": " + _scores[1];
     }
 
     public bool IsValidMove(Move move)
@@ -89,7 +93,8 @@ public class GameManager : MonoBehaviour
             _players[_turn].EndTurn();
             _turn = 1 - _turn;
             ShowScores();
-            //show a button to restart the game
+            _restartBtn.SetActive(true);
+            _moveBtn.SetActive(false);
             return;
         }
         if (_round > 16)
@@ -102,6 +107,6 @@ public class GameManager : MonoBehaviour
 
         _players[_turn].EndTurn();
         _turn = 1 - _turn;
-        _players[_turn].StartTurn(_round, _gameState);
+        _players[_turn].StartTurn(_round, _gameState.Copy());
     }
 }

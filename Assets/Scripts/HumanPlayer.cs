@@ -70,7 +70,6 @@ public class HumanPlayer : AbstractPlayer
             _boardPos = null;
             _piece = null;
             gameManager.SubmitMove(move);
-            Debug.Log("Submitted: " + gameObject.name);
         }
         else
         {
