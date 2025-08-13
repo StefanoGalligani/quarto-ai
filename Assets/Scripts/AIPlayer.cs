@@ -10,88 +10,78 @@ struct WeightedMove
 
 public class AIPlayer : AbstractPlayer
 {
-    [SerializeField] uint _maxDepth;
+    [SerializeField] private uint[] _maxDepths;
+    private uint _maxDepth;
+    private int _round;
     public override void StartTurn(int round, State state)
     {
         Move move = new Move();
+        _round = round;
+        _maxDepth = _maxDepths[Mathf.Min(_maxDepths.Length - 1, round)];
         switch (round)
         {
             case 0:
                 move.PieceSelection = state.FreePieces[Random.Range(0, state.FreePieces.Count - 1)];
                 break;
+            case 1:
+                state.FreePositions = new List<int> { 0, 1, 5 };
+                move = BestMove(state, 0).Move;
+                break;
             case 16:
-                move.BoardPosition = state.FreePositions[Random.Range(0, state.FreePositions.Count - 1)];
+                move.BoardPosition = state.FreePositions[0];
                 break;
             default:
-                move = BestMoveForPlayer(state, 0).Move;
+                move = BestMove(state, 0).Move;
                 break;
         }
         gameManager.SubmitMove(move);
     }
 
-    private WeightedMove BestMoveForPlayer(State state, uint depth)
+    private WeightedMove BestMove(State state, uint depth)
     {
         Move bestMove = new Move();
         int bestScore = int.MinValue;
-        //TODO cercare pezzi che fanno quarto e dove, se tra essi c'è il pezzo selezionato piazzarlo e selezionare arbitrariamente
-        foreach (Move m in GeneratePossiblePlacements(state.FreePositions))
-        {
-            if (depth == _maxDepth)
-            //eventualmente si può spostare dentro il loop interno e considerare anche il pezzo selezionato
-            //andrebbe modificata la funzione di valutazione per tenerne conto
-            {
-                Move move = new Move { BoardPosition = m.BoardPosition, PieceSelection = state.FreePieces[0] };
-                State newState = state.NextState(move);
-                int newScore = PositionValue(newState);
-                if (newScore > bestScore)
-                {
-                    bestMove = move;
-                    bestScore = newScore;
-                }
-                continue;
-            }
-            //TODO rimuovere dalla selezione i pezzi che causerebbero quarto
-            foreach (Move move in GeneratePossibleSelections(m, state.FreePieces))
-            {
-                State newState = state.NextState(move);
-                int newScore = BestMoveForOpponent(newState, depth + 1).Score;
-                if (newScore > bestScore)
-                {
-                    bestMove = move;
-                    bestScore = newScore;
-                }
-            }
-        }
-        return new WeightedMove(){Move = bestMove, Score = bestScore};
-    }
+        int fallbackPiece = state.FreePieces.Count > 0 ? state.FreePieces[0] : 0;
 
-    private WeightedMove BestMoveForOpponent(State state, uint depth)
-    {
-        Move bestMove = new Move();
-        int bestScore = int.MaxValue;
-        //TODO cercare pezzi che fanno quarto e dove, se tra essi c'è il pezzo selezionato piazzarlo e selezionare arbitrariamente
+        PossibleQuartos q = QuartoUtils.FindPossibleQuartos(state.Copy(), true);
+        int pos = q.QuartoPosForPiece(state.SelectedPiece);
+        if (pos > -1)
+        {
+            return new WeightedMove()
+            {
+                Move = new Move() { BoardPosition = pos, PieceSelection = fallbackPiece },
+                Score = 1000
+            };
+        }
+        
         foreach (Move m in GeneratePossiblePlacements(state.FreePositions))
         {
-            if (depth == _maxDepth)
+            State altState = state.Copy();
+            altState.BoardState[QuartoUtils.BoardX(m.BoardPosition)][QuartoUtils.BoardY(m.BoardPosition)] = state.SelectedPiece;
+            altState.FreePositions.Remove(m.BoardPosition);
+            q = QuartoUtils.FindPossibleQuartos(altState);
+            List<int> validPieces = q.PiecesThatDontCauseQuarto(altState.FreePieces, m.BoardPosition);
+            if (validPieces.Count > 0) fallbackPiece = validPieces[0];
+
+            if (depth == _maxDepth || _round + depth >= 15 || validPieces.Count == 0)
             //eventualmente si può spostare dentro il loop interno e considerare anche il pezzo selezionato
             //andrebbe modificata la funzione di valutazione per tenerne conto
             {
-                Move move = new Move { BoardPosition = m.BoardPosition, PieceSelection = state.FreePieces[0] };
+                Move move = new Move { BoardPosition = m.BoardPosition, PieceSelection = fallbackPiece };
                 State newState = state.NextState(move);
-                int newScore = -PositionValue(newState);
-                if (newScore < bestScore)
+                int newScore = validPieces.Count == 0 ? -1000 : PositionValue(newState);
+                if (newScore > bestScore)
                 {
                     bestMove = move;
                     bestScore = newScore;
                 }
                 continue;
             }
-            //TODO rimuovere dalla selezione i pezzi che causerebbero quarto
-            foreach (Move move in GeneratePossibleSelections(m, state.FreePieces))
+            foreach (Move move in GeneratePossibleSelections(m, validPieces))
             {
                 State newState = state.NextState(move);
-                int newScore = BestMoveForPlayer(newState, depth + 1).Score;
-                if (newScore < bestScore)
+                int newScore = -BestMove(newState, depth + 1).Score;
+                if (newScore > bestScore)
                 {
                     bestMove = move;
                     bestScore = newScore;

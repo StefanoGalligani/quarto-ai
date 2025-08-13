@@ -158,6 +158,128 @@ public static class QuartoUtils
         return score;
     }
 
+    public static PossibleQuartos FindPossibleQuartos(State state, bool considerSelectedPiece = false)
+    {
+        int[][] board = state.BoardState;
+        PossibleQuartos quartos = new PossibleQuartos();
+        if (considerSelectedPiece) state.FreePieces.Add(state.SelectedPiece);
+        //ROWS
+        for (int i = 0; i < 4; i++)
+        {
+            int nPieces = 4;
+            int tot = 0;
+            int freeJ = -1;
+            for (int j = 0; j < 4; j++)
+            {
+                if (board[i][j] == -1) { nPieces--; freeJ = j; }
+                else tot += binaryMapping[board[i][j]];
+            }
+            if (nPieces == 3)
+            {
+                foreach (int piece in state.FreePieces)
+                {
+                    if (IsQuarto(tot + binaryMapping[piece]))
+                    {
+                        quartos.AddMove(piece, i + freeJ * 4);
+                    }
+                }
+            }
+        }
+        //COLUMNS
+        for (int i = 0; i < 4; i++)
+        {
+            int nPieces = 4;
+            int tot = 0;
+            int freeJ = -1;
+            for (int j = 0; j < 4; j++)
+            {
+                if (board[j][i] == -1) { nPieces--; freeJ = j; }
+                else tot += binaryMapping[board[j][i]];
+            }
+            if (nPieces == 3)
+            {
+                foreach (int piece in state.FreePieces)
+                {
+                    if (IsQuarto(tot + binaryMapping[piece]))
+                    {
+                        quartos.AddMove(piece, i + freeJ * 4);
+                    }
+                }
+            }
+        }
+        //DIAGONALS
+        {
+            int nPieces = 4;
+            int tot = 0;
+            int freeI = -1;
+            for (int i = 0; i < 4; i++)
+            {
+                if (board[i][i] == -1) { nPieces--; freeI = i; }
+                else tot += binaryMapping[board[i][i]];
+            }
+            if (nPieces == 3)
+            {
+                foreach (int piece in state.FreePieces)
+                {
+                    if (IsQuarto(tot + binaryMapping[piece]))
+                    {
+                        quartos.AddMove(piece, freeI * 5);
+                    }
+                }
+            }
+        }
+        {
+            int nPieces = 4;
+            int tot = 0;
+            int freeI = -1;
+            for (int i = 0; i < 4; i++)
+            {
+                if (board[i][3 - i] == -1) { nPieces--; freeI = i; }
+                else tot += binaryMapping[board[i][3 - i]];
+            }
+            if (nPieces == 3)
+            {
+                foreach (int piece in state.FreePieces)
+                {
+                    if (IsQuarto(tot + binaryMapping[piece]))
+                    {
+                        quartos.AddMove(piece, (freeI + 1) * 3);
+                    }
+                }
+            }
+        }
+        //SQUARES
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                int nPieces = 4;
+                int tot = 0;
+                int freeI = -1, freeJ = -1;
+                if (board[i][j] == -1) { nPieces--; freeI = i; freeJ = j; }
+                else tot += binaryMapping[board[i][j]];
+                if (board[i][j + 1] == -1) { nPieces--; freeI = i; freeJ = j+1; }
+                else tot += binaryMapping[board[i][j + 1]];
+                if (board[i + 1][j] == -1) { nPieces--; freeI = i+1; freeJ = j; }
+                else tot += binaryMapping[board[i + 1][j]];
+                if (board[i + 1][j + 1] == -1) { nPieces--; freeI = i+1; freeJ = j+1; }
+                else tot += binaryMapping[board[i + 1][j + 1]];
+                if (nPieces == 3)
+                {
+                    foreach (int piece in state.FreePieces)
+                    {
+                        if (IsQuarto(tot + binaryMapping[piece]))
+                        {
+                            quartos.AddMove(piece, freeI + freeJ * 4);
+                        }
+                    }
+                }
+            }
+        }
+        return quartos;
+    }
+
+
     public static int BoardX(int pos)
     {
         return pos % 4;

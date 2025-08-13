@@ -2920,7 +2920,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameManager: {fileID: 0}
-  _maxDepth: 0
+  _maxDepths: 
 --- !u!4 &1141937797
 Transform:
   m_ObjectHideFlags: 0
@@ -3034,7 +3034,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameManager: {fileID: 0}
-  _maxDepth: 2
+  _maxDepths: 02000000020000000200000002000000020000000200000003000000030000000300000003000000030000000400000004000000030000000200000001000000
 --- !u!1 &1231357182
 GameObject:
   m_ObjectHideFlags: 0
