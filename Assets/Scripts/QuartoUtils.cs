@@ -202,7 +202,9 @@ public static class QuartoUtils
                 {
                     if (IsQuarto(tot + binaryMapping[piece]))
                     {
-                        quartos.AddMove(piece, i + freeJ * 4);
+                        //Debug.Log("Quarto found in position " + freeJ + ", " + i);
+                        //Debug.Log("Will be stored as " + (freeJ + i * 4));
+                        quartos.AddMove(piece, freeJ + i * 4);
                     }
                 }
             }
@@ -243,7 +245,7 @@ public static class QuartoUtils
                 {
                     if (IsQuarto(tot + binaryMapping[piece]))
                     {
-                        quartos.AddMove(piece, (freeI + 1) * 3);
+                        quartos.AddMove(piece, (4 - freeI) * 3);
                     }
                 }
             }

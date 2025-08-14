@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int _currentSelection = -1;
     [SerializeField] private AbstractPlayer[] _players;
     [SerializeField] private TextMeshProUGUI[] _scoreTexts;
+    [SerializeField] private TextMeshProUGUI _roundText;
     [SerializeField] private GameObject _moveBtn;
     [SerializeField] private GameObject _restartBtn;
     private int[] _scores = new int[2];
@@ -38,6 +39,8 @@ public class GameManager : MonoBehaviour
         _gameState.FreePieces = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 
         ShowScores();
+        _roundText.text = "Round: 0";
+        _roundText.color = new Color(0.3f, 0.65f, 0.4f);
         _restartBtn.SetActive(false);
         _moveBtn.SetActive(true);
         _round = 0;
@@ -68,7 +71,11 @@ public class GameManager : MonoBehaviour
 
     public void SubmitMove(Move move)
     {
-        if (!IsValidMove(move)) return;
+        if (!IsValidMove(move))
+        {
+            Debug.Log("Invalid move");
+            return;
+        }
         ApplyMove(move);
     }
 
@@ -86,11 +93,14 @@ public class GameManager : MonoBehaviour
         _gameState.SelectedPiece = move.PieceSelection;
         _gameState.FreePieces.Remove(move.PieceSelection);
         _round++;
+        _roundText.text = "Round: " + _round;
 
         if (QuartoUtils.CheckQuarto(_gameState))
         {
             _scores[_turn]++;
             _players[_turn].EndTurn();
+            _roundText.text = _players[_turn].GetName() + " Won";
+            _roundText.color = _scoreTexts[_turn].color;
             _turn = 1 - _turn;
             ShowScores();
             _restartBtn.SetActive(true);
@@ -99,7 +109,7 @@ public class GameManager : MonoBehaviour
         }
         if (_round > 16)
         {
-            Debug.Log("Draw");
+            _roundText.text = "Draw";
             return;
         }
 
