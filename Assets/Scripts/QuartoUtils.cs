@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Jobs;
 using UnityEngine;
 
@@ -33,7 +34,7 @@ public static class QuartoUtils
         return score;
     }
 
-    public static bool CheckQuarto(State state)
+    public static bool CheckQuarto(State state, List<int> pieces)
     {
         int[][] board = state.BoardState;
         //ROWS
@@ -45,7 +46,11 @@ public static class QuartoUtils
             {
                 tot += binaryMapping[board[i][j]];
             }
-            if (IsQuarto(tot)) return true;
+            if (IsQuarto(tot))
+            {
+                pieces.AddRange(new List<int>() { board[i][0], board[i][1], board[i][2], board[i][3] });
+                return true;
+            }
         }
         //COLUMNS
         for (int i = 0; i < 4; i++)
@@ -56,7 +61,11 @@ public static class QuartoUtils
             {
                 tot += binaryMapping[board[j][i]];
             }
-            if (IsQuarto(tot)) return true;
+            if (IsQuarto(tot))
+            {
+                pieces.AddRange(new List<int>() { board[0][i], board[1][i], board[2][i], board[3][i] });
+                return true;
+            }
         }
         //DIAGONALS
         if (!(board[0][0] == -1 || board[1][1] == -1 || board[2][2] == -1 || board[3][3] == -1))
@@ -66,7 +75,11 @@ public static class QuartoUtils
             {
                 tot += binaryMapping[board[i][i]];
             }
-            if (IsQuarto(tot)) return true;
+            if (IsQuarto(tot))
+            {
+                pieces.AddRange(new List<int>() { board[0][0], board[1][1], board[2][2], board[3][3] });
+                return true;
+            }
         }
         if (!(board[0][3] == -1 || board[1][2] == -1 || board[2][1] == -1 || board[3][0] == -1))
         {
@@ -75,7 +88,11 @@ public static class QuartoUtils
             {
                 tot += binaryMapping[board[i][3 - i]];
             }
-            if (IsQuarto(tot)) return true;
+            if (IsQuarto(tot))
+            {
+                pieces.AddRange(new List<int>() { board[0][3], board[1][2], board[2][1], board[3][0] });
+                return true;
+            }
         }
         //SQUARES
         for (int i = 0; i < 3; i++)
@@ -86,7 +103,11 @@ public static class QuartoUtils
                 int tot = 0;
                 tot += binaryMapping[board[i][j]] + binaryMapping[board[i][j + 1]] +
                     binaryMapping[board[i + 1][j]] + binaryMapping[board[i + 1][j + 1]];
-                if (IsQuarto(tot)) return true;
+                if (IsQuarto(tot))
+                {
+                    pieces.AddRange(new List<int>() { board[i][j], board[i][j + 1], board[i + 1][j], board[i + 1][j + 1] });
+                    return true;
+                }
             }
         }
         return false;

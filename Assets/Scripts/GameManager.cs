@@ -100,7 +100,8 @@ public class GameManager : MonoBehaviour
         _round++;
         _roundText.text = "Round: " + _round;
 
-        if (QuartoUtils.CheckQuarto(_gameState))
+        var piecesInQuarto = new List<int>();
+        if (QuartoUtils.CheckQuarto(_gameState, piecesInQuarto))
         {
             _scores[_turn]++;
             _players[_turn].EndTurn();
@@ -108,6 +109,7 @@ public class GameManager : MonoBehaviour
             _roundText.color = _scoreTexts[_turn].color;
             _turn = 1 - _turn;
             ShowScores();
+            _piecesManager.GameEnded(piecesInQuarto);
             _restartBtn.SetActive(true);
             _moveBtn.SetActive(false);
             return;

@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class PiecesManager : MonoBehaviour
 {
@@ -61,6 +62,16 @@ public class PiecesManager : MonoBehaviour
         int posy = QuartoUtils.BoardY(position);
 
         _pieces[_selectionIndex].transform.position = new Vector3(_firstCell.x + posx * _boardSpacing, 0.1f, _firstCell.y + posy * _boardSpacing);
+    }
+
+    public void GameEnded(List<int> piecesToHighlight)
+    {
+        foreach (int p in piecesToHighlight) SetOutline(p, true);
+        if (_temporarySelectionIndex > -1)
+        {
+            _pieces[_temporarySelectionIndex].transform.position -= new Vector3(0, 0.3f, 0);
+            SetOutline(_temporarySelectionIndex, false);
+        }
     }
 
     private void SetOutline(int piece, bool on)
