@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -27,6 +28,11 @@ public class PlayerController : MonoBehaviour
         float currentDist = transform.position.magnitude;
         float newDistance = Mathf.Clamp(currentDist + movement * _movSpeed, _minDistance, _maxDistance);
         transform.position *= newDistance / currentDist;
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            SceneManager.LoadScene(0);
+        }
     }
     
 }

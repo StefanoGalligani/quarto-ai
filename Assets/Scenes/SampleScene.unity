@@ -1708,8 +1708,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _piecesManager: {fileID: 449387189}
   _currentSelection: -1
-  _players:
+  _aiPlayers:
   - {fileID: 1212175183}
+  - {fileID: 1141937796}
+  _humanPlayers:
+  - {fileID: 1255230255}
   - {fileID: 660205589}
   _scoreTexts:
   - {fileID: 833736186}

@@ -155,7 +155,7 @@ public static class QuartoUtils
                 score += QuartoScore(tot, nPieces);
             }
         }
-        return score;
+        return Mathf.Min(score, 1000);
     }
 
     public static PossibleQuartos FindPossibleQuartos(State state, bool considerSelectedPiece = false)

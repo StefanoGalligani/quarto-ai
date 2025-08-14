@@ -6,11 +6,13 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private PiecesManager _piecesManager;
     [SerializeField] private int _currentSelection = -1;
-    [SerializeField] private AbstractPlayer[] _players;
+    [SerializeField] private AbstractPlayer[] _aiPlayers;
+    [SerializeField] private AbstractPlayer[] _humanPlayers;
     [SerializeField] private TextMeshProUGUI[] _scoreTexts;
     [SerializeField] private TextMeshProUGUI _roundText;
     [SerializeField] private GameObject _moveBtn;
     [SerializeField] private GameObject _restartBtn;
+    private AbstractPlayer[] _players;
     private int[] _scores = new int[2];
     private State _gameState;
     private int _turn = 0;
@@ -18,6 +20,9 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        _players = new AbstractPlayer[2];
+        _players[0] = PlayerPrefs.GetString("p1") == "h" ? _humanPlayers[0] : _aiPlayers[0];
+        _players[1] = PlayerPrefs.GetString("p2") == "h" ? _humanPlayers[1] : _aiPlayers[1];
         SetupGame();
     }
 
@@ -110,6 +115,8 @@ public class GameManager : MonoBehaviour
         if (_round > 16)
         {
             _roundText.text = "Draw";
+            _restartBtn.SetActive(true);
+            _moveBtn.SetActive(false);
             return;
         }
 

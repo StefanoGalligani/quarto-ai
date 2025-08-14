@@ -10,6 +10,7 @@ public class HumanPlayer : AbstractPlayer
     private State _state;
     private GameObject _piece;
     private GameObject _boardPos;
+    private GameObject _possibleSelection;
 
     private void Start()
     {
@@ -38,16 +39,31 @@ public class HumanPlayer : AbstractPlayer
 
             if (Physics.Raycast(ray, out hit))
             {
-                LayerMask layer = hit.collider.gameObject.layer;
-                int index = hit.collider.gameObject.transform.GetSiblingIndex();
+                _possibleSelection = hit.collider.gameObject;
+            }
+            else
+            {
+                _possibleSelection = null;
+            }
+        }
+        if (Input.GetMouseButtonUp(0) && _possibleSelection != null)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit))
+            {
+                if (_possibleSelection != hit.collider.gameObject) return;
+                LayerMask layer = _possibleSelection.layer;
+                int index = _possibleSelection.transform.GetSiblingIndex();
                 if (layer == LayerMask.NameToLayer("Pieces") && _state.FreePieces.Contains(index))
                 {
-                    _piece = hit.collider.gameObject;
+                    _piece = _possibleSelection;
                     _piecesManager.TemporarySelection(index);
                 }
                 if (layer == LayerMask.NameToLayer("Board") && _state.FreePositions.Contains(index))
                 {
-                    _boardPos = hit.collider.gameObject;
+                    _boardPos = _possibleSelection;
                     _piecesManager.TemporaryPlacement(index);
                 }
             }
